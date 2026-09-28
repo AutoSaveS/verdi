@@ -1,0 +1,8 @@
+numpy>=1.26
+scipy>=1.11
+pandas>=2.1
+scikit-learn>=1.3
+torch>=2.2
+pytest>=8.0
+# Optional: Parquet output in verdi.data.schema (CSV fallback is used without it)
+# pyarrow>=15.0

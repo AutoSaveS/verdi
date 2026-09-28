@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+.venv*/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.DS_Store
+# Raw provider data is never committed; the docs say where it comes from.
+data/raw/
+data/*/raw/
+runs/
+logs/
+outputs/
