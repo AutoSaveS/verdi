@@ -20,8 +20,8 @@ ERA5-Land reanalysis, SMAP soil moisture and static GIS layers for three
 metropolitan areas (New York City, Paris, Melbourne) on a 100 m grid.
 
 > Code accompanying the paper *"From observation to evaluation: Coupling
-> vegetation state and environmental conditions for near-real-time assessment of
-> urban vegetation resilience indicators"* (Urban Forestry & Urban Greening).
+> vegetation state and environmental conditions for real-time urban vegetation
+> resilience assessment"* (Urban Forestry & Urban Greening).
 
 ## Contents
 
