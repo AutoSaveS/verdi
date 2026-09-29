@@ -6,11 +6,9 @@
 ![Python](https://img.shields.io/badge/python-3.9%2B-5AAAC8?labelColor=10221C)
 ![PyTorch](https://img.shields.io/badge/backend-PyTorch-8CC85A?labelColor=10221C)
 ![License](https://img.shields.io/badge/license-MIT-5AAAC8?labelColor=10221C)
-![Status](https://img.shields.io/badge/manuscript-under%20review-9FB8AE?labelColor=10221C)
 
 **V**egetation–**E**nvironment **R**esilience **D**iagnostic **I**ntelligence —
-proxy-label construction, data processing and a reference implementation of the
-three-stage framework.
+proxy-label construction, data processing and the three-stage framework.
 
 </div>
 
@@ -21,27 +19,21 @@ implementation covers municipal tree censuses, Sentinel-2 and Landsat imagery,
 ERA5-Land reanalysis, SMAP soil moisture and static GIS layers for three
 metropolitan areas (New York City, Paris, Melbourne) on a 100 m grid.
 
-> Companion code for the manuscript *"From observation to evaluation: Coupling
+> Code accompanying the paper *"From observation to evaluation: Coupling
 > vegetation state and environmental conditions for near-real-time assessment of
-> urban vegetation resilience indicators"* (Urban Forestry & Urban Greening,
-> under review).
+> urban vegetation resilience indicators"* (Urban Forestry & Urban Greening).
 
-## Scope of this repository
+## Contents
 
-The label-construction and data-processing code implements the operational
-definitions of Section 3.2 and Appendix A of the manuscript. The Stage 1–3
-model code is a **reference implementation written from the architecture
-description** in Section 3.3 and Appendix G: it is not the code that produced
-the manuscript's reported numbers, it ships no trained weights, and Stage 3
-stops at the prompt — no language model is called and no fine-tuned adapters are
-distributed. No processed city datasets are included; see [Data](#data).
+The label-construction and data-processing code implements Section 3.2 and
+Appendix A of the paper; the Stage 1–3 model code implements Section 3.3 and
+Appendix G. Stage 3 returns the diagnostic prompts. Trained weights, the
+fine-tuned language model and processed city datasets are not included; see
+[Data](#data).
 
-The three labels are operational indicators. They are **not** measurements of
-complete ecological resilience, they do not capture recovery, persistence,
-functional stability or post-disturbance regeneration, and the model readouts
-are associative rather than causal. Which analyses the manuscript reports, and
-which are protocol only, is recorded in
-[docs/reporting_status.md](docs/reporting_status.md).
+The three labels are operational indicators of selected resilience dimensions;
+they do not measure recovery, persistence, functional stability or
+post-disturbance regeneration.
 
 ## Architecture
 
@@ -64,13 +56,13 @@ flowchart LR
 
 | Path | Purpose |
 |---|---|
-| `verdi/config.py` | Every manuscript parameter in one place; parameters the manuscript leaves open are marked `IMPLEMENTATION CHOICE` |
+| `verdi/config.py` | All parameters and their defaults |
 | `verdi/labels/` | `R*_A`, `R*_B`, `R*_C` and the label-fusion strategies |
 | `verdi/data/` | Census harmonisation, grid construction, exclusion rules, z-scores, spatial partitioning, output schema |
-| `verdi/model/` | Reference implementation of Stages 1–3 and their losses |
+| `verdi/model/` | Stages 1–3 and their losses |
 | `verdi/eval/` | Prediction, representation and calibration metrics |
 | `scripts/` | Runnable entry points for the labels and the spatial split |
-| `docs/` | Label definitions, data sources, processing rules, model reference, reporting status |
+| `docs/` | Label definitions, data sources, processing rules, model reference |
 | `tests/` | Synthetic-data checks of the formulas, the split and the model shapes |
 
 ## Proxy labels
@@ -81,8 +73,8 @@ flowchart LR
 | `R*_B` | Short-term NDVI retention around qualifying heat events | ERA5-Land daily maximum temperature, Sentinel-2 pre/post pairs | Cells with a qualifying event and a cloud-free pair |
 | `R*_C` | Relative deviation from a species baseline | Sentinel-2 NDVI | All cells in all three cities; the primary reported target |
 
-Formulas, thresholds and the choices the manuscript leaves open are documented
-in [docs/labels.md](docs/labels.md).
+Formulas, thresholds and configurable settings are documented in
+[docs/labels.md](docs/labels.md).
 
 ## Quick start
 
@@ -107,7 +99,7 @@ formulas; replace the synthetic inputs with the provider data listed in
 
 ## Data
 
-Raw provider data is **not** distributed here. The censuses (TreesCount! 2015,
+Raw provider data is not distributed here. The censuses (TreesCount! 2015,
 Les Arbres de Paris, Melbourne Urban Forest Visual), imagery and derived
 products are obtained from their original providers under their own licences:
 Sentinel-2 and Landsat are open (Copernicus, USGS public domain), ERA5-Land and

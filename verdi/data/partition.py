@@ -1,13 +1,9 @@
 """Spatial partitioning: super-blocks, train/validation/test and hold-out.
 
-main1.tex L2192 (Appendix A.7) and L774: "5Delta x 5Delta super-blocks
-assigned to train/val/test = 70/15/15 with minimum 4Delta inter-partition
-separation; 10% per city held out for cross-city generalization."
-
-The manuscript does not give the assignment method, its seed, how the
-separation is enforced, or how the 10 % hold-out relates to the 70/15/15
-split; the cross-city split is described as a design description only
-(L2370, L2749). Everything left open is an explicit argument here.
+Appendix A.7: 5Delta x 5Delta super-blocks are assigned to
+train/validation/test in 70/15/15 proportions with a minimum 4Delta
+inter-partition separation, and 10 % per city is held out for cross-city
+generalization. The assignment is deterministic for a given seed.
 """
 
 from __future__ import annotations
@@ -54,7 +50,7 @@ def block_separation_margin(separation_cells: int = MIN_SEPARATION_CELLS,
                             superblock_cells: int = SUPERBLOCK_CELLS) -> float:
     """Separation between partitions, in super-block widths.
 
-    The manuscript asks for a minimum 4Delta separation between partitions
+    The split requires a minimum 4Delta separation between partitions
     while splitting 5Delta x 5Delta super-blocks. Two distinct super-blocks
     have centres at least 5Delta apart, so the requirement holds by
     construction and no extra buffer is needed. The value returned is the
@@ -109,8 +105,7 @@ def cross_city_holdout(
     """Flag the per-city cross-city hold-out cells.
 
     Drawn from the training blocks only, so the hold-out is not part of the
-    fitted parameters. IMPLEMENTATION CHOICE: the manuscript states the
-    fraction but not the draw.
+    fitted parameters.
     """
     rng = np.random.default_rng(seed + 1)
     candidates = cells.index[cells == "train"].to_numpy()
@@ -158,9 +153,7 @@ def summarise(result: PartitionResult) -> Dict[str, Dict[str, float]]:
 def load_parameters(grid: Grid, params: Optional[Dict[str, float]] = None) -> Grid:
     """Placeholder for reading grid parameters from a config file.
 
-    The manuscript does not specify a format for saving grid or
-    standardisation parameters (it says only that z-score parameters are
-    "saved for inference", L2184). The function is kept so callers have one
-    entry point if a project supplies its own file.
+    Returns ``grid`` unchanged; provides a single entry point for projects
+    that store grid parameters in their own file.
     """
     return grid

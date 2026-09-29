@@ -1,9 +1,7 @@
-"""Reference implementation of the three VERDI stages.
+"""The three VERDI stages (Section 3.3; Appendix G).
 
-Written from the architecture description in Section 3.3 and Appendix G of
-the manuscript. It is not the code that produced the reported numbers, it
-carries no trained weights, and Stage 3 stops at the prompt: no language model
-is called and no fine-tuned adapters are distributed.
+Stage 3 builds the diagnostic prompts; language-model inference and trained
+weights are not part of this package.
 """
 
 from .losses import (

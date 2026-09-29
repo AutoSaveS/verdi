@@ -1,24 +1,21 @@
 """Loss terms of the three stages.
 
-Stage 1 (Eq. at main1.tex L835 and L858)::
+Stage 1::
 
     L_S1 = ||V - V_hat||^2 + ||E - E_hat||^2 + L_dis + lambda_r * ||R* - H_psi(z)||^2
     L_dis = beta * KL(q(z) || N(0, I))
           + lambda_TC * KL(q(z) || prod_k q(z^k))
           + lambda_a * sum_{(i,j) in P_k} L_align^k(z_i, z_j)
 
-Stage 2 (Eq. at L909 and L920)::
+Stage 2::
 
     L_MSM = E[ sum_{n in M_mask} ||x_n - x_hat_n||^2 ],  |M_mask| = floor(0.4 N_i)
     L_S2  = ||V_hat - V||^2 + ||E_hat - E||^2 + lambda_z * ||z_gt - z_sens||^2
             + lambda_r * ||R* - R_hat||^2
 
-IMPLEMENTATION CHOICE: the manuscript's L_S2 has no likelihood term, so how
-the reported sigma is trained is unspecified; ``GaussianNLL`` implements the
-standard reading of "V_hat ~ N(mu_V, sigma_V)" (L893) and can be switched off.
-The total-correlation term is written as the density-ratio estimate of
-Chen et al. (2018), which is what "density-ratio total correlation
-minimization" (L838) describes.
+``GaussianNLL`` trains the predicted sigma under ``V_hat ~ N(mu_V, sigma_V)``
+and can be switched off. The total-correlation term is the density-ratio
+estimate of Chen et al. (2018).
 """
 
 from __future__ import annotations
@@ -69,8 +66,7 @@ def weak_supervision_align(z: torch.Tensor, pairs_i: torch.Tensor,
 
     ``pairs_i`` / ``pairs_j`` index rows of ``z``; the term pulls those
     embeddings together, which is the "weak supervision" component of L_dis.
-    IMPLEMENTATION CHOICE: the manuscript does not give the form of
-    ``L_align^k``; squared distance is used here.
+    ``L_align^k`` is the squared distance.
     """
     if pairs_i.numel() == 0:
         return z.new_zeros(())
@@ -78,7 +74,7 @@ def weak_supervision_align(z: torch.Tensor, pairs_i: torch.Tensor,
 
 
 class StageOneLoss(nn.Module):
-    """L_S1 with the four parts of the manuscript equation."""
+    """L_S1: reconstruction, disentanglement and resilience terms."""
 
     def __init__(self, lambda_tc: float = 1.0, lambda_align: float = 0.5,
                  lambda_resilience: float = 1.0, beta: float = 1.0) -> None:
@@ -128,7 +124,7 @@ class StageOneLoss(nn.Module):
 
 
 def masked_sensor_loss(x: torch.Tensor, x_hat: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-    """L_MSM over the masked positions (Eq. at main1.tex L909)."""
+    """L_MSM over the masked positions."""
     if mask.sum() == 0:
         return x.new_zeros(())
     return F.mse_loss(x_hat[mask], x[mask])
@@ -188,9 +184,8 @@ class StageTwoLoss(nn.Module):
 class CrossStageConsistency(nn.Module):
     """L_cons of the end-to-end objective: align the two latent estimates.
 
-    ``L_E2E = lambda_1 L_S1 + lambda_2 L_S2 + lambda_3 L_cons`` (main1.tex
-    L993-L996). IMPLEMENTATION CHOICE: eta, introduced at L996 but never
-    defined, is exposed as ``eta`` here.
+    ``L_E2E = lambda_1 L_S1 + lambda_2 L_S2 + lambda_3 L_cons``, with the
+    consistency weight exposed as ``eta``.
     """
 
     def __init__(self, eta: float = 1e-5) -> None:

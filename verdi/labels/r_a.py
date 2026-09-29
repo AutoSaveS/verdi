@@ -1,4 +1,4 @@
-"""R*_A: relative cross-environment condition (Appendix A.5, main1.tex L2132).
+"""R*_A: relative cross-environment condition (Appendix A.5).
 
     P_i = 0.4 h_i + 0.4 n_i + 0.2 d_i
 
@@ -8,13 +8,8 @@ harmonised census health grade, ``n`` the within-species NDVI percentile and
 
     R*_A = rank(mean P) / N_s
 
-with multi-species grids averaged by canopy area.
-
-IMPLEMENTATION CHOICE: the manuscript does not define N_s, the rank direction,
-tie handling, the percentile scale, how tree-level NDVI is extracted, or how
-species below the 500-individual threshold and cells without a qualifying
-species are treated. The choices here are documented on the arguments that
-carry them.
+with multi-species grids averaged by canopy area. Rank, percentile and
+eligibility settings are documented on the functions below.
 """
 
 from __future__ import annotations
@@ -34,7 +29,7 @@ def harmonise_health(grades: pd.Series, city: str) -> pd.Series:
     """Map census health classes to [0, 1] using the field mapping (Table A.19).
 
     Paris has no census health field, so ``R*_A`` is unavailable there and no
-    substitute weights are used (main1.tex L2132).
+    substitute weights are used.
     """
     mapping: Dict[str, float] = HEALTH_GRADES[city]
     if not mapping:
@@ -46,8 +41,7 @@ def harmonise_health(grades: pd.Series, city: str) -> pd.Series:
     if unknown:
         raise KeyError(
             f"health grades {sorted(unknown)} have no harmonised value for "
-            f"{city!r}; add them to HEALTH_GRADES only if the manuscript "
-            "defines them"
+            f"{city!r}; add them to HEALTH_GRADES"
         )
     return grades.map(mapping)
 
@@ -55,9 +49,8 @@ def harmonise_health(grades: pd.Series, city: str) -> pd.Series:
 def within_species_percentile(values: pd.Series) -> pd.Series:
     """Percentile rank within a species, in (0, 1].
 
-    IMPLEMENTATION CHOICE: ``pandas.rank(pct=True)`` with average ties, so a
-    species of n trees spans 1/n .. 1. The manuscript writes "percentile" and
-    "rank" without fixing the scale.
+    ``pandas.rank(pct=True)`` with average ties, so a species of n trees
+    spans 1/n .. 1.
     """
     return values.rank(pct=True, method="average")
 
@@ -115,14 +108,13 @@ def grid_r_a(
 ) -> pd.Series:
     """Compute ``R*_A`` per grid cell.
 
-    Multi-species grids are averaged by canopy area (main1.tex L2132). The
+    Multi-species grids are averaged by canopy area. The
     grid-level rank normalization uses ascending average ranks over the cells
     that receive a value, divided by the number of such cells; cells with no
     eligible tree return NaN.
 
-    IMPLEMENTATION CHOICE: ``N_s`` is taken to be the number of scored cells
-    and the rank is ascending (higher composite condition ranks higher). The
-    manuscript leaves both implicit.
+    ``N_s`` is the number of scored cells and the rank is ascending (higher
+    composite condition ranks higher).
     """
     scored = tree_composite(trees, city)
     area_col = canopy_area_col if canopy_area_col in scored.columns else None

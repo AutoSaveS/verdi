@@ -1,6 +1,6 @@
 """Harmonise the three municipal tree censuses into one tree frame.
 
-Table A.19 (main1.tex L1947-L1965) maps each city's fields onto the unified
+Table A.19 maps each city's fields onto the unified
 columns used by the pipeline:
 
 ======================  =================  ==================  ==========================
@@ -14,10 +14,8 @@ health (0-1)            Good 1.0 / Fair     ULE >20 yr 1.0 /    unavailable
 coordinates             ``lat``, ``lon``   GeoJSON centroid    ``geo_point_2d``
 ======================  =================  ==================  ==========================
 
-IMPLEMENTATION CHOICE: the manuscript does not state the unit of the Paris
-circumference, the Melbourne ULE value below 10 years, or how a Melbourne
-centroid is expressed. The unit is an argument here and the unmapped classes
-raise rather than silently becoming NaN.
+The unit of the Paris circumference is an argument, and unmapped health
+classes raise rather than silently becoming NaN.
 """
 
 from __future__ import annotations
@@ -67,9 +65,8 @@ def to_db_cm(values: pd.Series, unit: str) -> pd.Series:
     """Convert a diameter measurement to centimetres.
 
     ``unit`` is ``"in"``, ``"cm"`` or ``"circumference"`` (a circumference in
-    the same unit as the length, whose unit Table A.19 does not state; the
-    caller passes the assumed unit through ``circumference_unit`` in
-    :func:`harmonise`).
+    the same unit as the length; the caller passes that unit through
+    ``circumference_unit`` in :func:`harmonise`).
     """
     if unit == "in":
         return values.astype(float) * INCH_TO_CM
@@ -140,7 +137,7 @@ def harmonise(
 def completeness(frame: pd.DataFrame, columns: Optional[list] = None) -> pd.Series:
     """Share of non-null values per row over ``columns`` (default: all but id).
 
-    Used for the ``< 70 %`` completeness exclusion (main1.tex L2188).
+    Used for the ``< 70 %`` completeness exclusion.
     """
     cols = columns if columns is not None else [c for c in frame.columns if c not in {"grid_id", "city"}]
     return frame[cols].notna().mean(axis=1)

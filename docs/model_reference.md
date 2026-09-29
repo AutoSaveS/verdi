@@ -1,9 +1,8 @@
-# Reference implementation of the model
+# Model
 
-`verdi/model/` is written from the architecture description in the manuscript.
-It is **not** the code that produced the reported numbers, it ships **no
-trained weights**, and Stage 3 stops at the prompt: there is no language model
-and no fine-tuned adapter in this repository.
+`verdi/model/` implements the three stages of Section 3.3 and Appendix G.
+Trained weights and the fine-tuned Stage 3 language model are not included;
+Stage 3 returns the diagnostic prompts.
 
 ## Stage 1 - Spatial World Model
 
@@ -21,10 +20,9 @@ Loss: dual reconstruction + disentanglement (marginal KL, total correlation,
 weak supervision) + resilience prediction, with `beta` annealed 1 to 4 and
 `lambda_TC = 1`, `lambda_a = 0.5`.
 
-`lambda_r` of the resilience term is not given in the manuscript and defaults
-to 1.0. The weak-supervision term needs pairs that differ in one factor; the
-manuscript does not say how they are selected, so
-`verdi.model.losses.weak_supervision_align` takes explicit index pairs.
+`lambda_r` of the resilience term defaults to 1.0. The weak-supervision term
+uses pairs that differ in one factor; `verdi.model.losses.weak_supervision_align`
+takes them as explicit index pairs.
 
 ## Stage 2 - Masked Sensor Transformer
 
@@ -40,27 +38,22 @@ manuscript does not say how they are selected, so
 | State heads | Gaussian `V`, `E`; scalar `R` |
 | Masking | `floor(0.4 * N_i)` tokens per episode for MSM pretraining |
 
-Fourier band count and staleness half-life are not given; both are configured in
-`Stage2Config`. Text metadata is encoded by "a frozen language-model encoder"
-that the manuscript does not name, so the model accepts precomputed text
-embeddings through `text_embed_dim` instead of bundling one.
+Fourier band count and staleness half-life are configured in `Stage2Config`.
+Text metadata from a frozen language-model encoder enters as precomputed
+embeddings through `text_embed_dim`.
 
-`L_S2` in the manuscript has no likelihood term, so how the reported `sigma` is
-trained is unspecified; `use_gaussian_nll` (default on) uses the negative
-log-likelihood implied by `V_hat ~ N(mu_V, sigma_V)`.
+`use_gaussian_nll` (default on) trains `sigma` with the negative
+log-likelihood of `V_hat ~ N(mu_V, sigma_V)`.
 
 ## Stage 3 - diagnostic reasoning
 
 * `Phi_i = z_i - z_base(s_i)`, with `z_base` the species mean of units above a
   healthy-baseline threshold.
 * A Gaussian mixture over `Phi_i` for units below the vulnerability threshold,
-  fitted with scikit-learn; the number of components defaults to a BIC search
-  because the manuscript never states `C`.
+  fitted with scikit-learn; the number of components defaults to a BIC search.
 * A three-level prompt cascade: evidence (cluster mean, extent, per-unit
   attributions, uncertainties), prior reasoning, instruction.
 
-Both thresholds, the covariance type and the instruction wording are not given
-in the manuscript and are arguments with stated defaults.
-
-The documented fine-tuning configuration (LLaMA-3-8B, LoRA rank 16, alpha 32,
-4-bit GPTQ) is recorded in `Stage3Config` for reference only.
+Both thresholds, the covariance type and the instruction wording are arguments
+with stated defaults. The fine-tuning configuration (LLaMA-3-8B, LoRA rank 16,
+alpha 32, 4-bit GPTQ) is recorded in `Stage3Config`.

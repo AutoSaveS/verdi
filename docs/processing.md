@@ -1,7 +1,6 @@
 # Processing pipeline
 
-`verdi/data/` implements the steps described in the data-processing appendix of
-the manuscript.
+`verdi/data/` implements the data-processing steps of Appendix A.7.
 
 ## Steps
 
@@ -33,9 +32,8 @@ A cell is dropped when any of the following holds:
 
 Per-city z-scores are fitted and the parameters saved for inference.
 `verdi.data.standardize.fit_transform` fits on the training partition by
-default, so validation and test statistics do not leak into the transform; the
-manuscript does not state which subset the parameters use, and `fit_on="all"`
-reproduces a whole-city fit. Categorical variables use learnable embeddings
+default, so validation and test statistics do not leak into the transform;
+`fit_on="all"` fits on the whole city. Categorical variables use learnable embeddings
 rather than z-scores.
 
 ## Spatial partitioning
@@ -45,12 +43,10 @@ rather than z-scores.
 * Test blocks are moved to positions that keep at least a 4Delta separation
   from the other partitions.
 * A further 10 % per city is held out for cross-city generalisation; it is
-  drawn from the training blocks and is a design description only.
+  drawn from the training blocks.
 
 The assignment is deterministic for a given seed; `PARTITION_SEED` in
-`verdi/config.py` fixes it. The manuscript does not specify the assignment
-method, the seed, or how the separation is enforced, so `verdi/data/partition.py`
-states each choice.
+`verdi/config.py` fixes it.
 
 ## Output table
 

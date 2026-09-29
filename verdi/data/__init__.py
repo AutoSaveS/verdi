@@ -3,7 +3,7 @@
 from .census import FIELD_MAP, harmonise
 from .grid import Grid, assign_points, cell_count_summary, city_grid, grid_from_extent
 from .partition import PartitionResult, make_partition, summarise
-from .schema import E_COLUMNS, MODALITIES, MODALITY_AVAILABILITY_CONSENSUS, V_COLUMNS, columns
+from .schema import E_COLUMNS, MODALITIES, MODALITY_AVAILABILITY, V_COLUMNS, columns
 from .standardize import ZScoreParams, fit_transform
 
 __all__ = [
@@ -13,7 +13,7 @@ __all__ = [
     "ZScoreParams",
     "E_COLUMNS",
     "MODALITIES",
-    "MODALITY_AVAILABILITY_CONSENSUS",
+    "MODALITY_AVAILABILITY",
     "V_COLUMNS",
     "assign_points",
     "cell_count_summary",

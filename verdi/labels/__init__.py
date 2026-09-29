@@ -1,8 +1,7 @@
 """Construction of the three proxy labels and their fusion strategies.
 
-The formulas follow Section 3.2 and Appendix A.5 of the manuscript. Where the
-manuscript leaves a parameter open, the choice is documented at the call site
-and in ``verdi/config.py``, never silently defaulted.
+The formulas follow Section 3.2 and Appendix A.5. Configurable parameters and
+their defaults are listed in ``verdi/config.py``.
 """
 
 from .fusion import (

@@ -1,21 +1,14 @@
 """R*_C: relative deviation from a species baseline.
 
-Eq. A.2, main1.tex L2145-L2150:
+Eq. A.2:
 
     R*_C = sigmoid( (NDVI_grid - NDVI~(s)) / sigma_NDVI(s) )
 
 where the baseline and its spread are species-level. This is the only label
-available in all three cities and it is the primary reported target
-(main1.tex L2178).
+available in all three cities and it is the primary target.
 
-Two caveats the repository keeps visible:
-
-* IMPLEMENTATION CHOICE: the manuscript writes the baseline only as the tilde
-  notation and never says whether it is a median or a mean. The statistic is
-  an argument here.
-* CONFLICT: Eq. A.2 is a sigmoid, but main1.tex L2673 describes R*_C as
-  "min-max standardized to [0, 1]". The label definition is used by default;
-  ``apply_minmax`` reproduces the other reading.
+The baseline statistic ("median" or "mean") is an argument, and
+``apply_minmax`` adds an optional min-max rescaling after the sigmoid.
 """
 
 from __future__ import annotations
@@ -40,7 +33,7 @@ def species_baseline(
     falling back to NaN for a species with a single observation.
     """
     if statistic not in {"median", "mean"}:
-        raise ValueError("statistic must be 'median' or 'mean' (IMPLEMENTATION CHOICE)")
+        raise ValueError("statistic must be 'median' or 'mean'")
     frame = pd.DataFrame({"ndvi": ndvi, "species": species}).dropna()
     grouped = frame.groupby("species")["ndvi"]
     centre = grouped.median() if statistic == "median" else grouped.mean()
@@ -63,11 +56,9 @@ def grid_r_c(
 
     ``ndvi`` and ``species`` are indexed by grid cell. ``baselines`` can be
     supplied to reuse the fit from another split; by default it is fitted on
-    the values passed in, which is the whole-city reading implied by "the
-    species-wide baseline" (L769).
+    the values passed in.
 
-    IMPLEMENTATION CHOICE: cells whose species has a single individual, or a
-    zero spread, cannot be standardised and return NaN.
+    Cells whose species has a single individual, or a zero spread, return NaN.
     """
     frame = pd.DataFrame({"ndvi": ndvi, "species": species}).dropna()
     if frame.empty:

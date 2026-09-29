@@ -1,14 +1,4 @@
-"""Evaluation metrics used by the manuscript's experiments.
-
-Definitions taken from Tables 5-9 and Appendix H (main1.tex L2347-L2366,
-L2465-L2520, L2763-L2776). Where the manuscript names a metric without
-defining it, that is stated here and the implementation is marked as a choice.
-
-Note the reporting status: ECE and the latent-indicator alignment are
-**protocol only** in the revision (no numerical values are reported, see
-``docs/reporting_status.md``). They are implemented so a project can compute
-them, not because the manuscript reports them.
-"""
+"""Evaluation metrics for the VERDI experiments (Tables 5-9; Appendix H)."""
 
 from __future__ import annotations
 
@@ -24,7 +14,7 @@ import torch
 # --------------------------------------------------------------------------
 
 def r2_score(y_true: np.ndarray, y_pred: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> float:
-    """R^2 as defined at main1.tex L2465: ``1 - SS_res / SS_tot``."""
+    """Coefficient of determination, ``1 - SS_res / SS_tot``."""
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
     if sample_weight is not None:
@@ -41,41 +31,32 @@ def r2_score(y_true: np.ndarray, y_pred: np.ndarray, sample_weight: Optional[np.
 
 
 def mae(y_true: np.ndarray, y_pred: np.ndarray) -> float:
-    """Mean absolute error. No formula is written in the manuscript."""
+    """Mean absolute error."""
     return float(np.mean(np.abs(np.asarray(y_true, dtype=float) - np.asarray(y_pred, dtype=float))))
 
 
 def rmse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
-    """Root mean squared error. No formula is written in the manuscript."""
+    """Root mean squared error."""
     diff = np.asarray(y_true, dtype=float) - np.asarray(y_pred, dtype=float)
     return float(np.sqrt(np.mean(diff ** 2)))
 
 
 def retention(r2_partial: float, r2_full: float) -> float:
-    """C2 retention ``R^2_{k=partial} / R^2_{k=6}`` (main1.tex L2466, L1655)."""
+    """C2 retention, ``R^2_{k=partial} / R^2_{k=6}``."""
     if r2_full == 0.0 or not np.isfinite(r2_full):
         return float("nan")
     return r2_partial / r2_full
 
 
 def c3_gap(r2_reference: float, r2_verdi: float) -> float:
-    """Relative gap used for acceptance criterion C3.
-
-    IMPLEMENTATION CHOICE: the manuscript never writes the formula; the
-    reported gaps (pooled 4.5 %, R*_A 4.0 %, R*_B 6.1 %, R*_C 4.5 %) match
-    ``(R2_ref - R2_verdi) / R2_ref``.
-    """
+    """Relative gap for acceptance criterion C3, ``(R2_ref - R2_verdi) / R2_ref``."""
     if r2_reference == 0.0:
         return float("nan")
     return (r2_reference - r2_verdi) / r2_reference
 
 
 def cohens_d(a: np.ndarray, b: np.ndarray, paired: bool = False) -> float:
-    """Cohen's d; paired form uses the standard deviation of the differences.
-
-    The manuscript reports Cohen's d but does not state which form (L1563,
-    L2474). ``paired=True`` matches the paired comparisons it describes.
-    """
+    """Cohen's d; the paired form uses the standard deviation of the differences."""
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
     if paired:
@@ -89,12 +70,7 @@ def cohens_d(a: np.ndarray, b: np.ndarray, paired: bool = False) -> float:
 
 def paired_bootstrap_ci(a: np.ndarray, b: np.ndarray, n: int = 10_000,
                         level: float = 0.95, seed: int = 0) -> Tuple[float, float]:
-    """Percentile bootstrap interval for the mean paired difference.
-
-    The manuscript specifies ``n = 10 000`` (L1298) but reports no interval
-    values (see ``docs/reporting_status.md``). BCA intervals are explicitly not
-    reported (main1.tex L2747).
-    """
+    """Percentile bootstrap interval for the mean paired difference."""
     rng = np.random.default_rng(seed)
     diff = np.asarray(a, dtype=float) - np.asarray(b, dtype=float)
     draws = rng.choice(diff, size=(n, diff.size), replace=True).mean(axis=1)
@@ -108,7 +84,7 @@ def paired_bootstrap_ci(a: np.ndarray, b: np.ndarray, n: int = 10_000,
 # --------------------------------------------------------------------------
 
 def cmra(stage1, v: torch.Tensor, e: torch.Tensor) -> float:
-    """Cross-modal reconstruction accuracy (main1.tex L2347).
+    """Cross-modal reconstruction accuracy.
 
     Decodes ``V_hat_cross`` from a latent encoded through the environmental
     branch only (and symmetrically for ``E``), reporting mean R^2 over the two
@@ -118,8 +94,7 @@ def cmra(stage1, v: torch.Tensor, e: torch.Tensor) -> float:
     with torch.no_grad():
         h_e = stage1.encoder_e(e).unsqueeze(1)
         h_v = stage1.encoder_v(v).unsqueeze(1)
-        # Zero the branch that is meant to be absent, as the manuscript does
-        # for Concat-VAE, then run the shared cross-attention and decoder.
+        # Zero the absent branch, then run the shared cross-attention and decoder.
         zeros_v = torch.zeros_like(h_v)
         zeros_e = torch.zeros_like(h_e)
         v_cross, _ = stage1.cross(zeros_v, h_e)
@@ -134,24 +109,21 @@ def cmra(stage1, v: torch.Tensor, e: torch.Tensor) -> float:
 
 
 def cmrg(r2_pretrained: float, r2_scratch: float) -> float:
-    """Cross-modal reconstruction gain: ``R^2_pretrained - R^2_scratch``.
+    """Cross-modal reconstruction gain, ``R^2_pretrained - R^2_scratch``.
 
-    The manuscript computes the mean over the off-diagonal entries of the
-    6 x 6 cross-modal matrix (main1.tex L2515), which cites "Eq. B.3" - an
-    equation that does not exist in the manuscript. The mean over the entries
-    is what is implemented here.
+    Pass the means over the off-diagonal entries of the 6 x 6 cross-modal
+    matrix to obtain the reported summary.
     """
     return float(r2_pretrained - r2_scratch)
 
 
 def dci_scores(factors: np.ndarray, targets: np.ndarray, alpha: float = 0.02) -> Dict[str, float]:
-    """Disentanglement, completeness and informativeness (main1.tex L2347).
+    """Disentanglement, completeness and informativeness (DCI).
 
     A Lasso regression is fitted from the estimated factors to the ground-truth
     generative factors and scored with the standard DCI definitions.
 
-    IMPLEMENTATION CHOICE: the manuscript does not give the Lasso penalty; the
-    usual ``alpha = 0.02`` from the DCI literature is used.
+    ``alpha`` is the Lasso penalty.
     """
     from sklearn.linear_model import Lasso
 
@@ -183,12 +155,12 @@ def dci_scores(factors: np.ndarray, targets: np.ndarray, alpha: float = 0.02) ->
 
 ALIGNMENT_PAIRS: Tuple[Tuple[str, str], ...] = (
     ("thermal", "lst_mean_K"),
-    ("water", "soil_oc_g_kge"),          # e9 x e10 in the manuscript
+    ("water", "soil_oc_g_kge"),          # e9 x e10
     ("wind", "wind_speed_ms"),           # e12 / e4
     ("soil", "soil_clay_pct"),           # e9 + e10
     ("competition", "planting_density"),  # v6 x v5
 )
-#: The five alignment pairs of main1.tex L2359-L2363. ``rho_target`` averages
+#: The five latent-indicator alignment pairs. ``rho_target`` averages
 #: |Spearman| over the pairs.
 
 
@@ -197,7 +169,7 @@ def rho_target(latent: np.ndarray, indicators: np.ndarray) -> float:
 
     ``latent`` and ``indicators`` are keyed by the names in
     :data:`ALIGNMENT_PAIRS`. Hungarian assignment is used when a model has no
-    explicit mapping (main1.tex L2359).
+    explicit mapping.
     """
     from scipy.stats import spearmanr
 
@@ -216,13 +188,7 @@ def rho_target(latent: np.ndarray, indicators: np.ndarray) -> float:
 
 def expected_calibration_error(probabilities: np.ndarray, correct: np.ndarray,
                                n_bins: int = 10) -> float:
-    """ECE with equal-width bins.
-
-    IMPLEMENTATION CHOICE: the manuscript names the metric and its target
-    (``ECE < 0.10``, main1.tex L1189, L2520) but gives neither a formula nor a
-    binning scheme. ECE is not reported in the revision; this exists so a
-    project can compute it and record how.
-    """
+    """Expected calibration error with ``n_bins`` equal-width bins."""
     probabilities = np.asarray(probabilities, dtype=float).ravel()
     correct = np.asarray(correct, dtype=float).ravel()
     if probabilities.size == 0:
@@ -246,7 +212,7 @@ def expected_calibration_error(probabilities: np.ndarray, correct: np.ndarray,
 
 @dataclass
 class AcceptanceCriteria:
-    """C1-C3 as stated in Tables 5 and 6 (main1.tex L1105-L1128, L1240)."""
+    """Acceptance criteria C1-C3 (Tables 5 and 6)."""
     retention_threshold: float = 0.80      # C2
     c3_gap_threshold: float = 0.05         # C3
     alpha: float = 0.01                    # p < 0.01

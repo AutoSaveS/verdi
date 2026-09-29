@@ -3,8 +3,7 @@
 Usage:
     python scripts/make_partition.py --city melbourne --delta 100 --out data/partition_melbourne.csv
 
-The split is deterministic for a given seed. See verdi/data/partition.py for the
-choices the manuscript leaves open.
+The split is deterministic for a given seed; see verdi/data/partition.py.
 """
 
 from __future__ import annotations

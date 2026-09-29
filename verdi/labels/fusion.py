@@ -1,18 +1,16 @@
 """Combining the three proxy labels.
 
-Two sets of strategies appear in the revision:
+Two sets of strategies are implemented:
 
-* Table A.25 (main1.tex L2158-L2176) - candidate fusion strategies: fixed
+* Table A.25 - fusion strategies: fixed
   weights with a grid search (S1), three prediction heads (S2), learnable
   weights conditioned on city and species (S3), and availability-based
   weights from a data-quality score (S4).
-* Table B.26 (main1.tex L2204-L2225) - the combinations actually tabulated:
+* Table B.26 - label combinations:
   R*_C only, equal weights over available labels, availability weights with
   indicator weights, and a multi-head variant sharing the generator.
 
-Only ``R*_C``-only is a reported configuration; the others are design
-descriptions (main1.tex L2178, L2229) and are implemented here so that the
-choice is explicit rather than implied.
+``R*_C`` alone is the primary configuration.
 """
 
 from __future__ import annotations
@@ -63,9 +61,8 @@ def combine_fixed_weights(
     """S1: R* = sum_k w_k R*_k, with the weights supplied by the caller.
 
     ``weights`` is a mapping over label names, for example
-    ``{"R_A": 0.3, "R_B": 0.3, "R_C": 0.4}``. The grid search that selects
-    them is left to the caller because the manuscript reports no result for
-    it (main1.tex L2178).
+    ``{"R_A": 0.3, "R_B": 0.3, "R_C": 0.4}``. Weight selection by grid search
+    is left to the caller.
     """
     missing = set(columns) - set(weights)
     if missing:

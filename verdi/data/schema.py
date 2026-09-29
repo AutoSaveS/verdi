@@ -1,13 +1,10 @@
 """The per-city output table.
 
-main1.tex L2192: "per-city Apache Parquet files containing grid identifiers,
-UTM/WGS84 coordinates, standardized V and E vectors, resilience labels
-(R*_A, R*_B, R*_C), availability flags, dominant species, tree count, data
-completeness, and partition assignment."
-
-Column names and types are not specified in the manuscript; the names below
-are this repository's choice and are declared in one place so a project can
-rename them without touching the label code.
+Per-city Parquet files with grid identifiers, UTM/WGS84 coordinates,
+standardized V and E vectors, the three resilience labels with availability
+flags, dominant species, tree count, data completeness and partition
+assignment (Appendix A.7). Column names are declared in one place so they can
+be renamed without touching the label code.
 
 Parquet output needs ``pyarrow``; :func:`write_table` falls back to CSV and
 says so, because the dependency is optional in ``requirements.txt``.
@@ -21,7 +18,7 @@ import pandas as pd
 
 from ..config import LATENT_FACTORS
 
-#: Vegetation configuration vector (Table A.22, main1.tex L2038-L2069).
+#: Vegetation configuration vector (Table A.22).
 V_COLUMNS: List[str] = [
     "species_diversity",      # v1  Shannon H' over species
     "dominant_spp_embed",     # v2  learnable, d = 8
@@ -37,7 +34,7 @@ V_COLUMNS: List[str] = [
     "lai_mean",               # v12 GEE biophysical processor
 ]
 
-#: Environmental condition vector (Table A.23, main1.tex L2071-L2104).
+#: Environmental condition vector (Table A.23).
 E_COLUMNS: List[str] = [
     "impervious_ratio",       # e1  WorldCover built-up / grid area
     "building_coverage",      # e2  footprint intersection / grid area
@@ -55,7 +52,7 @@ E_COLUMNS: List[str] = [
     "land_use_embed",         # e14 dominant WorldCover class embedding
 ]
 
-#: Sensing modalities m1-m6 (Table D.34, Panel A, main1.tex L2438-L2454).
+#: Sensing modalities m1-m6 (Table D.34, Panel A).
 MODALITIES: Dict[str, Dict[str, str]] = {
     "m1": {"name": "Satellite multispectral", "resolution": "10-30 m", "frequency": "5-16 d"},
     "m2": {"name": "Thermal infrared (Landsat 8/9 B10)", "resolution": "100 m", "frequency": "16 d"},
@@ -65,20 +62,11 @@ MODALITIES: Dict[str, Dict[str, str]] = {
     "m6": {"name": "Static GIS", "resolution": "vector", "frequency": "static"},
 }
 
-#: Per-city modality availability, Table D.34 Panel A (L2438-L2454).
-#: NOTE: Table 3 (L2005-L2030) gives a different pattern for Paris (m2 and m3
-#: marked available) and for Melbourne (m4 marked available). The revision
-#: states the availability twice with different content; the two readings are
-#: both recorded here and the conflict is reported in docs/data_sources.md.
-MODALITY_AVAILABILITY_CONSENSUS: Dict[str, Dict[str, bool]] = {
+#: Per-city modality availability (Table D.34, Panel A).
+MODALITY_AVAILABILITY: Dict[str, Dict[str, bool]] = {
     "nyc": {"m1": True, "m2": True, "m3": True, "m4": True, "m5": True, "m6": True},
     "paris": {"m1": True, "m2": False, "m3": False, "m4": True, "m5": False, "m6": True},
     "melbourne": {"m1": True, "m2": False, "m3": False, "m4": False, "m5": False, "m6": True},
-}
-MODALITY_AVAILABILITY_TABLE3: Dict[str, Dict[str, bool]] = {
-    "nyc": {"m1": True, "m2": True, "m3": True, "m4": True, "m5": True, "m6": True},
-    "paris": {"m1": True, "m2": True, "m3": True, "m4": True, "m5": False, "m6": True},
-    "melbourne": {"m1": True, "m2": True, "m3": False, "m4": True, "m5": False, "m6": False},
 }
 
 #: Latent factors exported for the typology step.

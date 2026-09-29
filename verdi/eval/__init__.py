@@ -1,4 +1,4 @@
-"""Prediction, representation and calibration metrics of the manuscript."""
+"""Prediction, representation and calibration metrics."""
 
 from .metrics import (
     ALIGNMENT_PAIRS,

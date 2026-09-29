@@ -1,6 +1,6 @@
 """R*_B: short-term NDVI retention around qualifying heat events.
 
-Appendix A.5, main1.tex L2136-L2141. A qualifying heat event is at least three
+Appendix A.5. A qualifying heat event is at least three
 consecutive days with daily maximum air temperature above the city-specific
 95th percentile of the ERA5-Land record for 2018-2023. Retention is computed
 from cloud-filtered Sentinel-2 pre/post pairs within 14 days:
@@ -9,13 +9,8 @@ from cloud-filtered Sentinel-2 pre/post pairs within 14 days:
 
 Cells without a qualifying event or without a valid image pair are NaN.
 
-IMPLEMENTATION CHOICE: the manuscript does not say which ERA5-Land variable
-gives T_max or how hourly values become a daily maximum, whether the
-percentile is taken over all days or the summer window and at which spatial
-unit, what the 14-day window is anchored to, whether the cloud threshold is
-per scene or per pixel, how NDVI is aggregated to a cell, or how several
-events in one cell are combined. Each of those is an explicit argument here,
-with the default stated.
+The temperature aggregation, percentile base period, window anchor, cloud
+filter and multi-event combination are arguments with stated defaults.
 """
 
 from __future__ import annotations
@@ -39,9 +34,8 @@ from ..config import (
 def daily_tmax(temperature: pd.Series, hours_per_day: int = 24) -> pd.Series:
     """Daily maximum of an hourly (or sub-daily) temperature series.
 
-    IMPLEMENTATION CHOICE: ERA5-Land ``2m_temperature`` (t2m, K) is the usual
-    reading of T_max; the aggregation here is a simple calendar-day maximum,
-    which assumes the series has one entry per hour.
+    Intended for ERA5-Land ``2m_temperature`` (t2m, K); the aggregation is a
+    calendar-day maximum and assumes one entry per hour.
     """
     if not isinstance(temperature.index, pd.DatetimeIndex):
         raise TypeError("temperature series must have a DatetimeIndex")
@@ -55,9 +49,8 @@ def detect_heat_events(
 ) -> List[Tuple[pd.Timestamp, pd.Timestamp]]:
     """Return runs of >= ``min_days`` consecutive days above ``percentile``.
 
-    The percentile is taken over the series passed in. IMPLEMENTATION CHOICE:
-    pass a summer-window series to reproduce a summer percentile, or the full
-    year for an annual one; the manuscript does not fix the base period.
+    The percentile is taken over the series passed in: pass a summer-window
+    series for a summer percentile, or the full year for an annual one.
     """
     if tmax.empty:
         return []
@@ -82,8 +75,8 @@ def detect_heat_events(
 def retention(ndvi_pre: float, ndvi_post: float, floor: float = R_B_NDVI_FLOOR) -> float:
     """Eq. A.1, clipped to [0, 1].
 
-    Note that the absolute value in the numerator means a greening response
-    also lowers the value; that is what the manuscript writes.
+    The absolute value in the numerator means a greening response also
+    lowers the value.
     """
     if not np.isfinite(ndvi_pre) or not np.isfinite(ndvi_post):
         return float("nan")
@@ -120,8 +113,7 @@ def grid_r_b(
 ) -> pd.Series:
     """Per-cell ``R*_B`` from event/pair records.
 
-    IMPLEMENTATION CHOICE: when a cell has several qualifying events the
-    manuscript does not say how to combine them; ``case="mean"`` averages the
+    When a cell has several qualifying events, ``case="mean"`` averages the
     per-event retentions, ``"last"`` keeps the most recent event. Cells with
     no usable pair are NaN.
     """

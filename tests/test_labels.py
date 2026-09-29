@@ -50,7 +50,7 @@ def test_r_a_is_a_rank_in_the_unit_interval():
 
 
 def test_r_a_min_species_threshold():
-    """Species below 500 individuals are not scored (main1.tex L2132)."""
+    """Species below 500 individuals are not scored."""
     small = _trees(n=100, per_grid=10)
     assert grid_r_a(small, "nyc", canopy_area_col=None).isna().all()
 

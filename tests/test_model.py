@@ -1,4 +1,4 @@
-"""Forward-shape checks for the reference implementation of Stages 1-3."""
+"""Forward-shape checks for Stages 1-3."""
 
 import numpy as np
 import pytest

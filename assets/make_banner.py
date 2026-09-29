@@ -52,7 +52,7 @@ def main() -> None:
               "Vegetation-Environment Resilience Diagnostic Intelligence",
               font=font(26), fill=ACCENT)
     draw.text((width - 480, height - 58),
-              "label construction  |  data processing  |  model reference",
+              "label construction  |  data processing  |  three-stage model",
               font=font(18), fill=SECONDARY)
 
     out = Path(__file__).with_name("banner.png")

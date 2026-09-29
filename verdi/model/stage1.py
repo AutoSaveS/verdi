@@ -1,7 +1,4 @@
-"""Stage 1, Spatial World Model: a reference implementation.
-
-Architecture from Section 3.3.1 and Table G.40 (main1.tex L804-L859,
-L2723-L2727):
+"""Stage 1, Spatial World Model (Section 3.3.1; Table G.40):
 
 * dual encoders ``F_V`` and ``F_E``, ``d -> 128 -> 128`` with LayerNorm and ReLU;
 * bidirectional cross-attention, 2 layers, 4 heads, ``d_model = 128``;
@@ -10,9 +7,8 @@ L2723-L2727):
 * ``H_psi: K -> 64 -> 32 -> 1`` with a sigmoid output.
 
 The six latent factors are thermal stress, water stress, wind exposure, soil
-quality, competition and a residual term (main1.tex L831). "Resilience is
-computed geometrically" (L843) is realised, as the manuscript says at L850, by
-"a lightweight MLP trained jointly with the encoder": ``H_psi`` here.
+quality, competition and a residual term. The resilience head ``H_psi`` is a
+lightweight MLP trained jointly with the encoder.
 """
 
 from __future__ import annotations
@@ -129,11 +125,7 @@ class Stage1(nn.Module):
 
     def z_base(self, z: torch.Tensor, r_hat: torch.Tensor, species: torch.Tensor,
                tau: float = 0.5) -> torch.Tensor:
-        """Per-species baseline ``z_base(s)`` of Eq. at main1.tex L938.
-
-        ``z_base(s) = E[z | H_psi(z) > tau, species = s]`` over the batch; the
-        threshold is an IMPLEMENTATION CHOICE (tau is never given).
-        """
+        """Per-species baseline ``z_base(s) = E[z | H_psi(z) > tau, species = s]`` over the batch."""
         out = torch.zeros_like(z)
         for s in torch.unique(species):
             mask = (species == s) & (r_hat.squeeze(-1) > tau)

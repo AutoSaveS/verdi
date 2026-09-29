@@ -11,6 +11,7 @@ provider data listed in docs/data_sources.md to build the real tables.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -115,7 +116,7 @@ def main() -> int:
     written = write_table(table, out)
     coverage = {label: f"{table[label].notna().mean():.0%}" for label in ("R_A", "R_B", "R_C")}
     print(f"wrote {written}: {len(table)} cells; label coverage {coverage}")
-    print("synthetic data: the numbers exercise the pipeline, not the manuscript")
+    print("synthetic input: values are for testing the pipeline only")
     return 0
 
 

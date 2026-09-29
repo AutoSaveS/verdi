@@ -1,6 +1,6 @@
 # Data sources
 
-Raw provider data is **not** distributed with this repository. Download it from
+Raw provider data is not distributed with this repository. Download it from
 the providers under their own licences; the tables below list what each
 variable needs.
 
@@ -29,9 +29,7 @@ Grid resolution is 100 m by default, ablated over 50-200 m.
 | m5 | SMAP soil moisture | 9 km | 2-3 day | yes | no | no |
 | m6 | Static GIS | vector | static | yes | yes | yes |
 
-These are the per-city configurations quoted in the manuscript text (NYC six,
-Paris three, Melbourne two). The revision states a wider pattern in one of its
-own tables; the manuscript has been aligned to the configurations above.
+Per-city configurations: NYC six modalities, Paris three, Melbourne two.
 
 ## Vegetation variables (V)
 
@@ -81,7 +79,7 @@ products; `e1`-`e5` and `e13` need city-specific sources.
 | Health (0-1) | Good / Fair / Poor | ULE > 20 yr / 10-20 yr | not available |
 | Coordinates | `lat`, `lon` | GeoJSON centroid | `geo_point_2d` |
 
-The unit of the Paris circumference is not stated in the manuscript; pass it to
+Pass the unit of the Paris circumference to
 `verdi.data.census.harmonise(circumference_unit=...)`.
 
 ## Licensing

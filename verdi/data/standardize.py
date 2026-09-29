@@ -1,12 +1,9 @@
 """Per-city z-score standardisation with saved parameters.
 
-Appendix A.7 (main1.tex L2184): "Per-city z-score standardization ...
-parameters saved for inference; categoricals use learnable embeddings."
-
-IMPLEMENTATION CHOICE: the manuscript does not say which split the
-standardisation parameters are fitted on. Fitting on the training partition
-is the safe reading (it avoids leaking validation and test statistics) and is
-the default here; ``fit_on="all"`` reproduces fitting on the whole city.
+Appendix A.7: per-city z-scores with parameters saved for inference;
+categorical variables use learnable embeddings. Parameters are fitted on the
+training partition by default so that validation and test statistics do not
+enter the transform; ``fit_on="all"`` fits on the whole city.
 """
 
 from __future__ import annotations

@@ -1,9 +1,6 @@
-"""Stage 2, Masked Sensor Transformer: a reference implementation.
+"""Stage 2, Masked Sensor Transformer (Section 3.3.2; Table G.40):
 
-Architecture from Section 3.3.2 and Table G.40 (main1.tex L862-L923,
-L2729-L2733):
-
-* token assembly (Eq. at L875)::
+* token assembly::
 
       T_i^(t) = (+)_{n in M_i} ( W_m(x_n) + e_m + gamma(x_n^loc, y_n^loc) + tau(t_n - t_ref) )
 
@@ -13,20 +10,15 @@ L2729-L2733):
   variable-length sequences with no padding and no imputation.
 
 * a Transformer with 6 layers, 8 heads, FFN width 1024 and dropout 0.1,
-  attending over three learnable queries ``q_V``, ``q_E`` and ``q_R``
-  (Eq. at L890);
-* Gaussian state heads, then the frozen Stage 1 encoder
-  (Eq. at L897)::
+  attending over three learnable queries ``q_V``, ``q_E`` and ``q_R``;
+* Gaussian state heads, then the frozen Stage 1 encoder::
 
       z_i = G_phi(V_hat_i, E_hat_i),  R_hat_i = H_psi(z_i),  Phi_i = z_i - z_base(s_i)
 
-* masked-sensor pretraining with ``|M_mask| = floor(0.4 N_i)`` (Eq. at L909).
+* masked-sensor pretraining with ``|M_mask| = floor(0.4 N_i)``.
 
-IMPLEMENTATION CHOICE: the number of Fourier bands and the staleness time
-unit are not given; both are configurable. The text-metadata encoder is
-declared as an interface only: the manuscript says text is encoded by "a
-frozen language-model encoder" (L878) without naming a model, so this
-repository accepts precomputed text embeddings rather than bundling a model.
+Optional text metadata enters as precomputed embeddings from a frozen
+language-model encoder, declared through ``text_embed_dim``.
 """
 
 from __future__ import annotations
@@ -42,9 +34,8 @@ from ..config import Stage2Config
 class FourierFeatures(nn.Module):
     """``gamma(x, y)``: sinusoidal features of the cell coordinates.
 
-    IMPLEMENTATION CHOICE: the manuscript does not give the frequency bands;
-    ``bands`` geometric frequencies over the normalised coordinate are used,
-    followed by a linear projection so the features can be added to the
+    ``bands`` geometric frequencies over the normalised coordinate, followed
+    by a linear projection so the features can be added to the
     ``d_model``-wide modality tokens.
     """
 
@@ -69,8 +60,7 @@ class FourierFeatures(nn.Module):
 class StalenessEmbedding(nn.Module):
     """``tau(t - t_ref)``: sinusoidal embedding of the observation age.
 
-    IMPLEMENTATION CHOICE: the time unit is a configurable half-life in days,
-    because the manuscript gives the embedding's form but not its scale.
+    The time scale is a configurable half-life in days.
     """
 
     def __init__(self, dim: int, half_life_days: float = 5.0) -> None:
@@ -135,7 +125,7 @@ class Stage2(nn.Module):
         )
         self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=config.layers)
 
-        # Learnable queries from Eq. at L890, plus the per-token decode head.
+        # Learnable state queries, plus the per-token decode head.
         self.queries = nn.Parameter(torch.randn(config.query_tokens, config.d_model) * 0.02)
         self.token_head = nn.Linear(config.d_model, config.d_model)
 
@@ -189,8 +179,7 @@ class Stage2(nn.Module):
             if self.text_embed_dim is None:
                 raise ValueError(
                     "text_embedding was supplied but the model was built without "
-                    "text_embed_dim; the manuscript names no text encoder (L878), "
-                    "so the dimension must be declared explicitly"
+                    "text_embed_dim; declare the embedding dimension explicitly"
                 )
             tokens = torch.cat([tokens, self.text_proj(text_embedding).unsqueeze(1)], dim=1)
 
@@ -227,9 +216,7 @@ class Stage2(nn.Module):
     def sigma(self, out: Dict[str, torch.Tensor]) -> torch.Tensor:
         """Scalar predictive uncertainty ``sigma_i``.
 
-        IMPLEMENTATION CHOICE: the manuscript reports ``sigma_i`` (L893) but
-        not how it is reduced from the per-dimension variances; the mean
-        standard deviation of the vegetation head is used.
+        The mean standard deviation of the vegetation head.
         """
         return torch.exp(0.5 * out["v_log_var"]).mean(dim=-1)
 

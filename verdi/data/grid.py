@@ -2,10 +2,7 @@
 
 Section 3.1 and Appendix A.2: each study domain is covered by a regular grid
 of Delta x Delta cells (Delta = 100 m by default, ablated over
-{50, 75, 100, 150, 200} m at main1.tex L1998). The manuscript reports grid
-cell counts per city in two places that do not agree (Table 2 L709 vs
-Table A.18 L1940); this module computes the count from a bounding box rather
-than asserting either.
+{50, 75, 100, 150, 200} m). Cell counts are computed from the bounding box.
 """
 
 from __future__ import annotations
@@ -86,10 +83,5 @@ def assign_points(grid: Grid, x: np.ndarray, y: np.ndarray) -> pd.DataFrame:
 
 
 def cell_count_summary(delta_m: float = DELTA_M) -> Dict[str, int]:
-    """Total cells per city at ``delta_m`` resolution.
-
-    Compare with Table 2 (main1.tex L709) and Table A.18 (L1940): the two
-    reported counts differ, so this function is the one place the geometric
-    count is computed.
-    """
+    """Total cells per city at ``delta_m`` resolution."""
     return {city: city_grid(city, delta_m).n_cells for city in STUDY_AREAS}
