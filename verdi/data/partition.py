@@ -1,6 +1,6 @@
 """Spatial partitioning: super-blocks, train/validation/test and hold-out.
 
-Appendix A.7: 5Delta x 5Delta super-blocks are assigned to
+Appendix A.5: 5Delta x 5Delta super-blocks are assigned to
 train/validation/test in 70/15/15 proportions with a minimum 4Delta
 inter-partition separation, and 10 % per city is held out for cross-city
 generalization. The assignment is deterministic for a given seed.

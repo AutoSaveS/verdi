@@ -1,6 +1,6 @@
 """Per-city z-score standardisation with saved parameters.
 
-Appendix A.7: per-city z-scores with parameters saved for inference;
+Appendix A.5: per-city z-scores with parameters saved for inference;
 categorical variables use learnable embeddings. Parameters are fitted on the
 training partition by default so that validation and test statistics do not
 enter the transform; ``fit_on="all"`` fits on the whole city.

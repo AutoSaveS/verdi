@@ -1,4 +1,4 @@
-"""Stage 1, Spatial World Model (Section 3.3.1; Table G.40):
+"""Stage 1, Spatial World Model (Section 3.3.1; Table E.33):
 
 * dual encoders ``F_V`` and ``F_E``, ``d -> 128 -> 128`` with LayerNorm and ReLU;
 * bidirectional cross-attention, 2 layers, 4 heads, ``d_model = 128``;

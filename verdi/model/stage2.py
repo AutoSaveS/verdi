@@ -1,4 +1,4 @@
-"""Stage 2, Masked Sensor Transformer (Section 3.3.2; Table G.40):
+"""Stage 2, Masked Sensor Transformer (Section 3.3.2; Table E.33):
 
 * token assembly::
 

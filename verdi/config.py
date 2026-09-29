@@ -1,6 +1,6 @@
 """Parameters of the VERDI workflow.
 
-Values follow Section 3 and Appendices A and G of the accompanying paper.
+Values follow Section 3 and Appendices A and E of the accompanying paper.
 Parameters that have no fixed value in the paper are exposed here with a
 default so that each run can record the setting it used.
 """
@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Tuple
 
 # --------------------------------------------------------------------------
-# Proxy labels (Section 3.2; Appendix A.5)
+# Proxy labels (Section 3.2; Appendix A.3)
 # --------------------------------------------------------------------------
 
 #: R*_A composite weights P_i = 0.4 h_i + 0.4 n_i + 0.2 d_i.
@@ -44,19 +44,19 @@ R_C_BASELINE_STATISTIC = "median"
 #: Apply an additional min-max rescaling to [0, 1] after the sigmoid.
 R_C_APPLY_MINMAX = False
 
-#: Label fusion (Table A.25; Table B.26).
+#: Label fusion (Appendix A.4; Table A.23).
 #: R*_C is the primary target; it is available in all three cities.
 PRIMARY_LABEL = "R_C"
 
 # --------------------------------------------------------------------------
-# Study areas and grid (Section 3.1, Table 2, Appendix A.1/A.2)
+# Study areas and grid (Section 3.1, Table 3)
 # --------------------------------------------------------------------------
 
 #: Grid cell size in metres, and the sizes used for the resolution ablation.
 DELTA_M = 100
 DELTA_ABLATION_M = (50, 75, 100, 150, 200)
 
-#: Metropolitan extents and CRS (Table A.18).
+#: Metropolitan extents (Table 3) and projected CRS.
 STUDY_AREAS: Dict[str, Dict[str, object]] = {
     "nyc": {"centre": (40.71, -74.01), "koppen": "Cfa", "extent_km": (46.3, 53.1),
             "area_km2": 2458, "crs": "EPSG:32618", "summer": "Jun-Aug"},
@@ -66,7 +66,7 @@ STUDY_AREAS: Dict[str, Dict[str, object]] = {
                   "area_km2": 2666, "crs": "EPSG:32755", "summer": "Dec-Feb"},
 }
 
-#: Cell exclusion rules (Appendix A.7).
+#: Cell exclusion rules (Appendix A.5).
 EXCLUDE_WATER_FRACTION = 0.80          # water-body fraction > 80 %
 EXCLUDE_NDVI_IF_NO_TREES = 0.15        # n_trees = 0 and NDVI < 0.15
 EXCLUDE_MIN_COMPLETENESS = 0.70        # data completeness < 70 %
@@ -74,7 +74,7 @@ OUTLIER_BOUNDS = {"ndvi": (0.0, 1.0), "dbh_cm": (0.0, 200.0),
                   "building_height_m": (0.0, 300.0)}
 
 # --------------------------------------------------------------------------
-# Spatial partitioning (Appendix A.7)
+# Spatial partitioning (Appendix A.5)
 # --------------------------------------------------------------------------
 
 SUPERBLOCK_CELLS = 5                  # 5Δ x 5Δ super-blocks
@@ -85,12 +85,12 @@ CROSS_CITY_HOLDOUT = 0.10             # 10 % per city
 PARTITION_SEED = 20260101
 
 # --------------------------------------------------------------------------
-# Model (Section 3.3; Appendix G, Table G.40)
+# Model (Section 3.3; Appendix E, Table E.33)
 # --------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class Stage1Config:
-    """Stage 1, Spatial World Model (Section 3.3.1, Table G.40)."""
+    """Stage 1, Spatial World Model (Section 3.3.1, Table E.33)."""
     hidden: Tuple[int, int] = (128, 128)     # d -> 128 -> 128, LayerNorm, ReLU
     attn_layers: int = 2                     # "2 layers, 4 heads, d_model=128"
     attn_heads: int = 4
@@ -112,7 +112,7 @@ LATENT_FACTORS = ("thermal", "water", "wind", "soil", "competition", "residual")
 
 @dataclass(frozen=True)
 class Stage2Config:
-    """Stage 2, Masked Sensor Transformer (Section 3.3.2, Table G.40)."""
+    """Stage 2, Masked Sensor Transformer (Section 3.3.2, Table E.33)."""
     d_model: int = 256                       # modality projection -> d = 256
     layers: int = 6                          # "6 layers, 8 heads, FFN 1024"
     heads: int = 8
@@ -130,7 +130,7 @@ class Stage2Config:
 
 @dataclass(frozen=True)
 class Stage3Config:
-    """Stage 3, diagnostic reasoning (Section 3.3.3, Table G.40)."""
+    """Stage 3, diagnostic reasoning (Section 3.3.3, Table E.33)."""
     n_clusters: int = 0                      # 0 = select C by BIC
     covariance_type: str = "full"
     #: Healthy-baseline threshold tau and vulnerability threshold tau_vuln.
@@ -147,7 +147,7 @@ class Stage3Config:
 
 @dataclass(frozen=True)
 class TrainingConfig:
-    """Training settings (Section 3.4, Table 10)."""
+    """Training settings (Section 3.4, Table 11)."""
     stage1_epochs: int = 150
     stage1_beta_anneal_epochs: int = 50
     stage2_pretrain_epochs: int = 100
@@ -167,7 +167,7 @@ class TrainingConfig:
 
 @dataclass(frozen=True)
 class MetricsConfig:
-    """Evaluation settings (Tables 5-9; Appendix H)."""
+    """Evaluation settings (Tables 5-9; Appendix F)."""
     ece_bins: int = 10                       # equal-width bins for ECE
     bootstrap_n: int = 10_000                # paired bootstrap resamples
     alpha_adjusted: float = 0.0033           # Bonferroni-adjusted alpha

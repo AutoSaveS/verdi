@@ -1,6 +1,6 @@
 """Grid construction and point-to-cell assignment.
 
-Section 3.1 and Appendix A.2: each study domain is covered by a regular grid
+Section 3.1: each study domain is covered by a regular grid
 of Delta x Delta cells (Delta = 100 m by default, ablated over
 {50, 75, 100, 150, 200} m). Cell counts are computed from the bounding box.
 """
@@ -63,7 +63,7 @@ def grid_from_extent(extent_km: Tuple[float, float], delta_m: float = DELTA_M,
 
 
 def city_grid(city: str, delta_m: float = DELTA_M) -> Grid:
-    """Grid for one of the three study areas, using Table A.18 extents."""
+    """Grid for one of the three study areas, using Table 3 extents."""
     if city not in STUDY_AREAS:
         raise KeyError(f"unknown city {city!r}; expected one of {sorted(STUDY_AREAS)}")
     return grid_from_extent(STUDY_AREAS[city]["extent_km"], delta_m=delta_m)

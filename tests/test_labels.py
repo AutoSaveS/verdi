@@ -1,4 +1,4 @@
-"""Checks of the proxy-label formulas against Appendix A.5."""
+"""Checks of the proxy-label formulas against Appendix A.3."""
 
 import numpy as np
 import pandas as pd

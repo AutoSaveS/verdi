@@ -1,4 +1,4 @@
-"""R*_A: relative cross-environment condition (Appendix A.5).
+"""R*_A: relative cross-environment condition (Appendix A.3).
 
     P_i = 0.4 h_i + 0.4 n_i + 0.2 d_i
 
@@ -35,7 +35,7 @@ def harmonise_health(grades: pd.Series, city: str) -> pd.Series:
     if not mapping:
         raise ValueError(
             f"no census health field is harmonised for {city!r}; R*_A is "
-            "unavailable for this city (Appendix A.5)"
+            "unavailable for this city (Appendix A.3)"
         )
     unknown = set(grades.dropna().unique()) - set(mapping)
     if unknown:

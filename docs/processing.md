@@ -1,6 +1,6 @@
 # Processing pipeline
 
-`verdi/data/` implements the data-processing steps of Appendix A.7.
+`verdi/data/` implements the data-processing steps of Appendix A.5.
 
 ## Steps
 

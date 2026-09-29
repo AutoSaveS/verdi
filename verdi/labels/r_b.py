@@ -1,6 +1,6 @@
 """R*_B: short-term NDVI retention around qualifying heat events.
 
-Appendix A.5. A qualifying heat event is at least three
+Appendix A.3. A qualifying heat event is at least three
 consecutive days with daily maximum air temperature above the city-specific
 95th percentile of the ERA5-Land record for 2018-2023. Retention is computed
 from cloud-filtered Sentinel-2 pre/post pairs within 14 days:

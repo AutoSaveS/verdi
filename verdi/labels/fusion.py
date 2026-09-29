@@ -2,11 +2,11 @@
 
 Two sets of strategies are implemented:
 
-* Table A.25 - fusion strategies: fixed
+* Table A.23 - fusion strategies: fixed
   weights with a grid search (S1), three prediction heads (S2), learnable
   weights conditioned on city and species (S3), and availability-based
   weights from a data-quality score (S4).
-* Table B.26 - label combinations:
+* Appendix A.4 - label combinations:
   R*_C only, equal weights over available labels, availability weights with
   indicator weights, and a multi-head variant sharing the generator.
 
@@ -39,10 +39,10 @@ def combine_availability_weighted(
     quality: Optional[pd.DataFrame] = None,
     columns: Sequence[str] = LABELS,
 ) -> pd.Series:
-    """Availability weights ``w_k = 1[available]`` (Table B.26), optionally
+    """Availability weights ``w_k = 1[available]`` (Appendix A.4), optionally
     multiplied by a per-label data-quality score ``q_k`` in [0, 1].
 
-    ``w_k`` proportional to ``q_k`` is strategy S4 of Table A.25.
+    ``w_k`` proportional to ``q_k`` is strategy S4 of Table A.23.
     """
     values = labels[list(columns)]
     weights = values.notna().astype(float)
@@ -98,5 +98,5 @@ def combine_learnable_weights(
     return (values * weights).sum(axis=1, skipna=False).astype(float)
 
 
-#: Names of the Table B.26 strategies, for scripts and documentation.
+#: Names of the Appendix A.4 strategies, for scripts and documentation.
 STRATEGIES = ("R_C_only", "equal_available", "availability_weighted", "multi_head")

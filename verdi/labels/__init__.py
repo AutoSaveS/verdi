@@ -1,6 +1,6 @@
 """Construction of the three proxy labels and their fusion strategies.
 
-The formulas follow Section 3.2 and Appendix A.5. Configurable parameters and
+The formulas follow Section 3.2 and Appendix A.3. Configurable parameters and
 their defaults are listed in ``verdi/config.py``.
 """
 

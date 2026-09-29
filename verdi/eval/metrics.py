@@ -1,4 +1,4 @@
-"""Evaluation metrics for the VERDI experiments (Tables 5-9; Appendix H)."""
+"""Evaluation metrics for the VERDI experiments (Tables 5-9; Appendix F)."""
 
 from __future__ import annotations
 
@@ -212,7 +212,7 @@ def expected_calibration_error(probabilities: np.ndarray, correct: np.ndarray,
 
 @dataclass
 class AcceptanceCriteria:
-    """Acceptance criteria C1-C3 (Tables 5 and 6)."""
+    """Acceptance criteria C1-C3 (Tables 6 and 7)."""
     retention_threshold: float = 0.80      # C2
     c3_gap_threshold: float = 0.05         # C3
     alpha: float = 0.01                    # p < 0.01
