@@ -20,7 +20,7 @@ R_A_WEIGHTS: Dict[str, float] = {"health": 0.4, "ndvi_pct": 0.4, "dbh_pct": 0.2}
 #: Minimum number of conspecific individuals for a species to be ranked.
 R_A_MIN_SPECIES_N = 500
 
-#: Census health grades harmonised to [0, 1] (Table A.17).
+#: Census health grades harmonised to [0, 1] (Table A.16).
 #: NYC: Good/Fair/Poor. Melbourne: ULE classes. Paris: no health field.
 HEALTH_GRADES: Dict[str, Dict[str, float]] = {
     "nyc": {"Good": 1.0, "Fair": 0.6, "Poor": 0.2},
@@ -44,7 +44,7 @@ R_C_BASELINE_STATISTIC = "median"
 #: Apply an additional min-max rescaling to [0, 1] after the sigmoid.
 R_C_APPLY_MINMAX = False
 
-#: Label fusion (Appendix A.4; Table A.21).
+#: Label fusion (Appendix A.4; Table A.20).
 #: R*_C is the primary target; it is available in all three cities.
 PRIMARY_LABEL = "R_C"
 
@@ -84,12 +84,12 @@ CROSS_CITY_HOLDOUT = 0.10             # 10 % of the training partition
 PARTITION_SEED = 20260101
 
 # --------------------------------------------------------------------------
-# Model (Section 3.2; Appendix E, Table E.31)
+# Model (Section 3.2; Appendix E, Table E.30)
 # --------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class Stage1Config:
-    """Stage 1, Spatial World Model (Section 3.2.1, Table E.31)."""
+    """Stage 1, Spatial World Model (Section 3.2.1, Table E.30)."""
     hidden: Tuple[int, int] = (128, 128)     # d -> 128 -> 128, LayerNorm, ReLU
     attn_layers: int = 2                     # "2 layers, 4 heads, d_model=128"
     attn_heads: int = 4
@@ -111,7 +111,7 @@ LATENT_FACTORS = ("thermal", "water", "wind", "soil", "competition", "residual")
 
 @dataclass(frozen=True)
 class Stage2Config:
-    """Stage 2, Masked Sensor Transformer (Section 3.2.2, Table E.31)."""
+    """Stage 2, Masked Sensor Transformer (Section 3.2.2, Table E.30)."""
     d_model: int = 256                       # modality projection -> d = 256
     layers: int = 6                          # "6 layers, 8 heads, FFN 1024"
     heads: int = 8
@@ -129,7 +129,7 @@ class Stage2Config:
 
 @dataclass(frozen=True)
 class Stage3Config:
-    """Stage 3, diagnostic reasoning (Section 3.2.3, Table E.31)."""
+    """Stage 3, diagnostic reasoning (Section 3.2.3, Table E.30)."""
     n_clusters: int = 0                      # 0 = select C by BIC
     covariance_type: str = "full"
     #: Healthy-baseline threshold tau and vulnerability threshold tau_vuln.
@@ -146,7 +146,7 @@ class Stage3Config:
 
 @dataclass(frozen=True)
 class TrainingConfig:
-    """Training settings (Section 3.3, Table E.32)."""
+    """Training settings (Section 3.3, Table E.31)."""
     stage1_epochs: int = 150
     stage1_beta_anneal_epochs: int = 50
     stage2_pretrain_epochs: int = 100
@@ -166,7 +166,7 @@ class TrainingConfig:
 
 @dataclass(frozen=True)
 class MetricsConfig:
-    """Evaluation settings (Tables 4-8; Appendix F)."""
+    """Evaluation settings (Tables 4-7; Appendix F)."""
     ece_bins: int = 10                       # equal-width bins for ECE
     bootstrap_n: int = 10_000                # paired bootstrap resamples
     alpha_adjusted: float = 0.0033           # Bonferroni-adjusted alpha

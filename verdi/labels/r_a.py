@@ -26,7 +26,7 @@ REQUIRED_COLUMNS = ("grid_id", "species", "health_grade", "ndvi", "dbh_cm")
 
 
 def harmonise_health(grades: pd.Series, city: str) -> pd.Series:
-    """Map census health classes to [0, 1] using the field mapping (Table A.17).
+    """Map census health classes to [0, 1] using the field mapping (Table A.16).
 
     Paris has no census health field, so ``R*_A`` is unavailable there and no
     substitute weights are used.
