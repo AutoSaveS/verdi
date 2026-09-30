@@ -1,6 +1,6 @@
 """Harmonise the three municipal tree censuses into one tree frame.
 
-Table A.18 maps each city's fields onto the unified
+Table A.17 maps each city's fields onto the unified
 columns used by the pipeline:
 
 ======================  =================  ==================  ==========================
@@ -27,7 +27,7 @@ import pandas as pd
 
 from ..labels.r_a import harmonise_health
 
-#: Source field names per city, as in Table A.18.
+#: Source field names per city, as in Table A.17.
 FIELD_MAP: Dict[str, Dict[str, Optional[str]]] = {
     "nyc": {
         "species": "spc_latin",

@@ -2,7 +2,7 @@
 
 Two sets of strategies are implemented:
 
-* Table A.22 - fusion strategies: fixed
+* Table A.21 - fusion strategies: fixed
   weights with a grid search (S1), three prediction heads (S2), learnable
   weights conditioned on city and species (S3), and availability-based
   weights from a data-quality score (S4).
@@ -42,7 +42,7 @@ def combine_availability_weighted(
     """Availability weights ``w_k = 1[available]`` (Appendix A.4), optionally
     multiplied by a per-label data-quality score ``q_k`` in [0, 1].
 
-    ``w_k`` proportional to ``q_k`` is strategy S4 of Table A.22.
+    ``w_k`` proportional to ``q_k`` is strategy S4 of Table A.21.
     """
     values = labels[list(columns)]
     weights = values.notna().astype(float)

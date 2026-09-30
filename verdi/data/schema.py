@@ -18,7 +18,7 @@ import pandas as pd
 
 from ..config import LATENT_FACTORS
 
-#: Vegetation configuration vector (Table A.19).
+#: Vegetation configuration vector (Table A.18).
 V_COLUMNS: List[str] = [
     "species_diversity",      # v1  Shannon H' over species
     "dominant_spp_embed",     # v2  learnable, d = 8
@@ -34,7 +34,7 @@ V_COLUMNS: List[str] = [
     "lai_mean",               # v12 GEE biophysical processor
 ]
 
-#: Environmental condition vector (Table A.20).
+#: Environmental condition vector (Table A.19).
 E_COLUMNS: List[str] = [
     "impervious_ratio",       # e1  WorldCover built-up / grid area
     "building_coverage",      # e2  footprint intersection / grid area
@@ -52,7 +52,7 @@ E_COLUMNS: List[str] = [
     "land_use_embed",         # e14 dominant WorldCover class embedding
 ]
 
-#: Sensing modalities m1-m6 (Table C.28, Panel A).
+#: Sensing modalities m1-m6 (Table C.27, Panel A).
 MODALITIES: Dict[str, Dict[str, str]] = {
     "m1": {"name": "Satellite multispectral", "resolution": "10-30 m", "frequency": "5-16 d"},
     "m2": {"name": "Thermal infrared (Landsat 8/9 B10)", "resolution": "100 m", "frequency": "16 d"},
@@ -62,7 +62,7 @@ MODALITIES: Dict[str, Dict[str, str]] = {
     "m6": {"name": "Static GIS", "resolution": "vector", "frequency": "static"},
 }
 
-#: Per-city modality availability (Table C.28, Panel A).
+#: Per-city modality availability (Table C.27, Panel A).
 MODALITY_AVAILABILITY: Dict[str, Dict[str, bool]] = {
     "nyc": {"m1": True, "m2": True, "m3": True, "m4": True, "m5": True, "m6": True},
     "paris": {"m1": True, "m2": False, "m3": False, "m4": True, "m5": False, "m6": True},
