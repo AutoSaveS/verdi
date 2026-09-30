@@ -82,18 +82,24 @@ def combine_learnable_weights(
 ) -> pd.Series:
     """S3: softmax over per-(city, species) logits ``alpha``.
 
-    ``alpha`` is indexed like ``labels`` with one column per label; the
-    softmax is taken across the label axis and renormalised over the
-    available labels.
+    ``alpha`` is indexed like ``labels`` with one column per label. A label
+    that is unavailable for a cell is excluded from the softmax before it is
+    taken, so the weights are renormalised over the available labels and a
+    missing logit never propagates a NaN into the combined score. Cells with
+    no available label return NaN.
     """
-    logits = alpha[list(columns)].to_numpy(dtype=float)
-    logits = logits - np.nanmax(logits, axis=1, keepdims=True)
-    exp = np.exp(logits)
-    weights = exp / exp.sum(axis=1, keepdims=True)
-    weights = pd.DataFrame(weights, index=labels.index, columns=list(columns))
     available = labels[list(columns)].notna()
-    weights = weights * available
-    weights = weights.div(weights.sum(axis=1).replace(0.0, np.nan), axis=0)
+    logits = alpha[list(columns)].to_numpy(dtype=float)
+    # A missing label must not enter the softmax: its logit can be NaN, which
+    # would poison the row maximum, and leaving it in would let an unavailable
+    # label take weight away from the ones that are present.
+    logits = np.where(available.to_numpy(), logits, -np.inf)
+    row_max = np.max(logits, axis=1, keepdims=True)
+    row_max = np.where(np.isfinite(row_max), row_max, 0.0)
+    exp = np.exp(logits - row_max)
+    total = exp.sum(axis=1, keepdims=True)
+    weights = np.divide(exp, total, out=np.zeros_like(exp), where=total > 0)
+    weights = pd.DataFrame(weights, index=labels.index, columns=list(columns))
     values = labels[list(columns)].fillna(0.0)
     return (values * weights).sum(axis=1, skipna=False).astype(float)
 

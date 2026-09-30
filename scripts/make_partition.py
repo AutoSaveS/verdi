@@ -9,6 +9,7 @@ The split is deterministic for a given seed; see verdi/data/partition.py.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -51,5 +52,4 @@ def _with_seed(grid, seed: int):
 
 
 if __name__ == "__main__":
-    import os
     raise SystemExit(main())

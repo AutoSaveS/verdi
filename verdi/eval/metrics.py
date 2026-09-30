@@ -155,7 +155,7 @@ def dci_scores(factors: np.ndarray, targets: np.ndarray, alpha: float = 0.02) ->
 
 ALIGNMENT_PAIRS: Tuple[Tuple[str, str], ...] = (
     ("thermal", "lst_mean_K"),
-    ("water", "soil_oc_g_kge"),          # e9 x e10
+    ("water", "soil_oc_g_kg"),           # e9 x e10
     ("wind", "wind_speed_ms"),           # e12 / e4
     ("soil", "soil_clay_pct"),           # e9 + e10
     ("competition", "planting_density"),  # v6 x v5
@@ -168,17 +168,21 @@ def rho_target(latent: np.ndarray, indicators: np.ndarray) -> float:
     """Mean absolute Spearman correlation over the alignment pairs.
 
     ``latent`` and ``indicators`` are keyed by the names in
-    :data:`ALIGNMENT_PAIRS`. Hungarian assignment is used when a model has no
-    explicit mapping.
+    :data:`ALIGNMENT_PAIRS`. A name that is absent from the supplied mapping
+    raises ``KeyError`` rather than being dropped, so the average is always
+    taken over all five pairs.
     """
     from scipy.stats import spearmanr
 
     values = []
     for latent_name, indicator_name in ALIGNMENT_PAIRS:
-        if latent_name in latent and indicator_name in indicators:
-            rho, _ = spearmanr(latent[latent_name], indicators[indicator_name])
-            if np.isfinite(rho):
-                values.append(abs(float(rho)))
+        if latent_name not in latent:
+            raise KeyError(f"latent factor {latent_name!r} is missing")
+        if indicator_name not in indicators:
+            raise KeyError(f"indicator {indicator_name!r} is missing")
+        rho, _ = spearmanr(latent[latent_name], indicators[indicator_name])
+        if np.isfinite(rho):
+            values.append(abs(float(rho)))
     return float(np.mean(values)) if values else float("nan")
 
 

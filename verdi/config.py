@@ -79,8 +79,7 @@ OUTLIER_BOUNDS = {"ndvi": (0.0, 1.0), "dbh_cm": (0.0, 200.0),
 
 SUPERBLOCK_CELLS = 5                  # 5Δ x 5Δ super-blocks
 SPLIT_FRACTIONS = (0.70, 0.15, 0.15)  # train / validation / test
-MIN_SEPARATION_CELLS = 4              # minimum 4Δ inter-partition separation
-CROSS_CITY_HOLDOUT = 0.10             # 10 % per city
+CROSS_CITY_HOLDOUT = 0.10             # 10 % of the training partition
 #: Seed of the block assignment, fixed for reproducible splits.
 PARTITION_SEED = 20260101
 

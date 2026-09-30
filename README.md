@@ -2,7 +2,7 @@
 
 ![VERDI](assets/banner.png)
 
-![Tests](https://img.shields.io/badge/tests-26%20passing-8CC85A?labelColor=10221C)
+![Tests](https://img.shields.io/badge/tests-30%20passing-8CC85A?labelColor=10221C)
 ![Python](https://img.shields.io/badge/python-3.9%2B-5AAAC8?labelColor=10221C)
 ![PyTorch](https://img.shields.io/badge/backend-PyTorch-8CC85A?labelColor=10221C)
 ![License](https://img.shields.io/badge/license-MIT-5AAAC8?labelColor=10221C)

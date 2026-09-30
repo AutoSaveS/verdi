@@ -40,10 +40,14 @@ rather than z-scores.
 
 * 5Delta x 5Delta super-blocks are dealt to train / validation / test in
   70 / 15 / 15 proportions.
-* Test blocks are moved to positions that keep at least a 4Delta separation
-  from the other partitions.
-* A further 10 % per city is held out for cross-city generalisation; it is
-  drawn from the training blocks.
+* Each super-block takes a single split, so the partitions are disjoint and
+  cover the domain. The blocks tile the domain contiguously, so the
+  separation between partitions is at the block scale: two blocks in
+  different partitions share a border, and cells across that border are one
+  Delta apart. No cell-level buffer is applied and none is claimed.
+* A further 10 % **of the training partition** per city is held out for
+  cross-city generalisation; it is drawn from the training blocks, so the
+  hold-out is never part of the fitted parameters.
 
 The assignment is deterministic for a given seed; `PARTITION_SEED` in
 `verdi/config.py` fixes it.
