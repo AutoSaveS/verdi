@@ -1,4 +1,4 @@
-"""Evaluation metrics for the VERDI experiments (Tables 5-9; Appendix F)."""
+"""Evaluation metrics for the VERDI experiments (Tables 4-8; Appendix F)."""
 
 from __future__ import annotations
 

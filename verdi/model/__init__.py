@@ -1,4 +1,4 @@
-"""The three VERDI stages (Section 3.3; Appendix E).
+"""The three VERDI stages (Section 3.2; Appendix E).
 
 Stage 3 builds the diagnostic prompts; language-model inference and trained
 weights are not part of this package.

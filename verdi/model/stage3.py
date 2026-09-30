@@ -1,6 +1,6 @@
 """Stage 3, diagnostic reasoning: factor attribution, typology, prompt building.
 
-Section 3.3.3:
+Section 3.2.3:
 
 * attribution ``Phi_i = z_i - z_base(s_i)``;
 * a Gaussian-mixture typology over ``Phi_i`` for units below a vulnerability

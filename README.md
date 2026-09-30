@@ -25,8 +25,8 @@ metropolitan areas (New York City, Paris, Melbourne) on a 100 m grid.
 
 ## Contents
 
-The label-construction and data-processing code implements Section 3.2 and
-Appendix A of the paper; the Stage 1–3 model code implements Section 3.3 and
+The label-construction and data-processing code implements Section 3.1 and
+Appendix A of the paper; the Stage 1–3 model code implements Section 3.2 and
 Appendix E. Stage 3 returns the diagnostic prompts. Trained weights, the
 fine-tuned language model and processed city datasets are not included; see
 [Data](#data).

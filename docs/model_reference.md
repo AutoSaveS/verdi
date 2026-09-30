@@ -1,6 +1,6 @@
 # Model
 
-`verdi/model/` implements the three stages of Section 3.3 and Appendix E.
+`verdi/model/` implements the three stages of Section 3.2 and Appendix E.
 Trained weights and the fine-tuned Stage 3 language model are not included;
 Stage 3 returns the diagnostic prompts.
 

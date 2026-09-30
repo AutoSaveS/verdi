@@ -1,8 +1,8 @@
 """VERDI: proxy-label construction, data processing and the three-stage model.
 
 ``labels`` and ``data`` implement the operational definitions and processing
-rules of Section 3.2 and Appendix A; ``model`` implements the architecture of
-Section 3.3 and Appendix E.
+rules of Section 3.1 and Appendix A; ``model`` implements the architecture of
+Section 3.2 and Appendix E.
 """
 
 __version__ = "0.1.0"
