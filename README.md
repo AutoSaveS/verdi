@@ -88,6 +88,9 @@ python scripts/build_labels.py --city nyc --cells 400
 # Create and summarise the spatial split for a city
 python scripts/make_partition.py --city melbourne
 
+# Agreement between the labels that follows from their construction alone
+python scripts/label_overlap.py --cells 4000 --seeds 5
+
 # Run the checks
 python -m pytest tests/
 ```
