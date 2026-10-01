@@ -24,6 +24,9 @@ R*_A = rank(mean P over the cell) / N_s
 * Multi-species cells are averaged by canopy area.
 * Health grades are harmonised from the census classes: NYC Good / Fair / Poor
   = 1.0 / 0.6 / 0.2; Melbourne ULE > 20 yr = 1.0 and 10-20 yr = 0.6.
+* `R*_A` shares the within-species NDVI component with `R*_C`, so agreement
+  between the two labels is partly built in; the census health grade is the
+  component that does not come from NDVI.
 
 Settings, exposed as arguments:
 

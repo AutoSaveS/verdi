@@ -117,6 +117,40 @@ def cmrg(r2_pretrained: float, r2_scratch: float) -> float:
     return float(r2_pretrained - r2_scratch)
 
 
+#: Modality pairs with an expected physical link, each with the minimum
+#: reconstruction R^2 specified in advance (Appendix C.2). They are checks of
+#: predictive association between modalities.
+LINKED_PAIRS: Dict[Tuple[str, str], float] = {
+    ("m2", "m5"): 0.30,   # thermal <-> soil moisture (evapotranspiration)
+    ("m1", "m5"): 0.25,   # greenness <-> water (growth dynamics)
+    ("m2", "m6"): 0.35,   # temperature <-> imperviousness (UHI)
+    ("m1", "m2"): 0.30,   # reflectance <-> thermal (energy balance)
+}
+#: Pairs without an expected link should stay below this R^2 (e.g. m3-m6).
+UNLINKED_MAX_R2 = 0.15
+
+
+def cross_modal_pair_checks(r2: Dict[Tuple[str, str], float],
+                            unlinked: Sequence[Tuple[str, str]] = (("m3", "m6"),)) -> Dict[str, bool]:
+    """Check reconstruction R^2 of selected modality pairs (Appendix C.2).
+
+    ``r2`` maps an (i, j) pair of the 6 x 6 cross-modal matrix to its R^2; the
+    order of a pair does not matter. Linked pairs pass when R^2 exceeds the
+    threshold in :data:`LINKED_PAIRS`; ``unlinked`` pairs pass when R^2 is
+    below :data:`UNLINKED_MAX_R2`.
+    """
+    def lookup(pair: Tuple[str, str]) -> float:
+        if pair in r2:
+            return float(r2[pair])
+        if pair[::-1] in r2:
+            return float(r2[pair[::-1]])
+        raise KeyError(f"no reconstruction R^2 for pair {pair}")
+
+    out = {f"{i}-{j}": lookup((i, j)) > t for (i, j), t in LINKED_PAIRS.items()}
+    out.update({f"{i}-{j}": lookup((i, j)) < UNLINKED_MAX_R2 for i, j in unlinked})
+    return out
+
+
 def dci_scores(factors: np.ndarray, targets: np.ndarray, alpha: float = 0.02) -> Dict[str, float]:
     """Disentanglement, completeness and informativeness (DCI).
 
@@ -192,7 +226,11 @@ def rho_target(latent: np.ndarray, indicators: np.ndarray) -> float:
 
 def expected_calibration_error(probabilities: np.ndarray, correct: np.ndarray,
                                n_bins: int = 10) -> float:
-    """Expected calibration error with ``n_bins`` equal-width bins."""
+    """Expected calibration error with ``n_bins`` equal-width bins.
+
+    ``ECE = sum_b (|B_b| / N) |acc(B_b) - conf(B_b)|``; the acceptance
+    threshold is ``ECE < 0.10`` per city under P3 (Appendix C.2).
+    """
     probabilities = np.asarray(probabilities, dtype=float).ravel()
     correct = np.asarray(correct, dtype=float).ravel()
     if probabilities.size == 0:

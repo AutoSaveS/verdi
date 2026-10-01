@@ -168,6 +168,7 @@ class TrainingConfig:
 class MetricsConfig:
     """Evaluation settings (Tables 4-7; Appendix F)."""
     ece_bins: int = 10                       # equal-width bins for ECE
+    ece_threshold: float = 0.10              # ECE < 0.10, per city under P3 (Appendix C.2)
     bootstrap_n: int = 10_000                # paired bootstrap resamples
     alpha_adjusted: float = 0.0033           # Bonferroni-adjusted alpha
     ci_level: float = 0.95
